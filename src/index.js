@@ -2,7 +2,7 @@
 import {init} from "pell";
 
 (function($) {
-    $.fn.editor = function(settings) {
+    $.fn.pell = function(settings) {
         this.each(function() {
             let $p= $("<div class='pell'></div>");
 
@@ -19,7 +19,7 @@ import {init} from "pell";
                 }
             });
 
-            this.editor = init(settings);
+            this.pell = init(settings);
         });
         return this;
     };

@@ -7,3 +7,5 @@ This package extends the ```skyline/html-form``` package by a further text field
 $ composer require skyline/html-form-simple-html-control
 ```
 
+#### Thanks to
+```pell```
