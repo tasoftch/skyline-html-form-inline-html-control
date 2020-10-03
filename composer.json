@@ -1,0 +1,22 @@
+{
+  "name": "skyline/html-form-simple-html-control",
+  "description": "Addition to the skyline/html-form package to extend it by a simple inline html editor",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Thomas Abplanalp",
+      "email": "info@tasoft.ch"
+    }
+  ],
+  "require": {
+    "skyline/html-form": "^0.8"
+  },
+  "require-dev": {
+    "skyline/compiler": "^0.8"
+  },
+  "scripts": {
+    "post-create-project-cmd": [
+      "npm install"
+    ]
+  }
+}
