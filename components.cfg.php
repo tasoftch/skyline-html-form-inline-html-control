@@ -6,7 +6,7 @@ use Skyline\Component\Config\JavaScriptComponent;
 
 return [
 	// all these keys can be required in templates like @require YourComponent
-    "HTMLEditor" => [
+    "SkylinePell" => [
     	// Use the JavaScriptComponent to load the scripts in html head tag, so before any content gets loaded.
 		"js" => new JavaScriptComponent(
 				...AbstractComponent::makeLocalFileComponentArguments(

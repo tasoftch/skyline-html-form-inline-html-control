@@ -1,6 +1,6 @@
 {
   "name": "skyline-html-control",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "An extension to the html form controls",
   "scripts": {
     "v:patch": "npm version --no-git-tag-version patch",
