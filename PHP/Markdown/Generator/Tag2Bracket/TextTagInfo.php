@@ -40,8 +40,10 @@ class TextTagInfo extends StaticTagInfo
 	protected $openTags = [
 		"br" => "\n",
 		"p" => '<p>',
-		"b" => "<strong>",
-		"i" => '<em>',
+		"b" => ["<strong>", "<b>"],
+		"strong" => ["<strong>", "<b>"],
+		"i" => ['<em>', '<i>'],
+		"em" => ['<em>', '<i>'],
 		"u" => '<u>',
 		"strike" => '<s>',
 		"s" => '<s>'
@@ -49,8 +51,10 @@ class TextTagInfo extends StaticTagInfo
 
 	protected $closeTags = [
 		"p" => '</p>',
-		"b" => "</strong>",
-		"i" => '</em>',
+		"b" => ["</strong>", "</b>"],
+		"strong" => ["</strong>", "</b>"],
+		"i" => ['</em>', '</i>'],
+		"em" => ['</em>', '</i>'],
 		"u" => '</u>',
 		"strike" => '</s>',
 		"s" => '</s>'
