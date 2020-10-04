@@ -128,7 +128,7 @@ class StaticTagInfo implements TagInfoInterface
 
 		repeat:
 		if(is_array($value)) {
-			$value = $value[$options] ?? NULL;
+			$value = $value[$options & static::IS_EDITOR_OPTION ? 1 : 0] ?? NULL;
 			goto repeat;
 		} elseif(is_callable($value)) {
 			$value = call_user_func($value, $options, $tag);
