@@ -9,6 +9,11 @@ import {init} from "pell";
             $p.css("width", $(this).width() + "px");
             $p.css("height", $(this).height() + "px");
 
+            if($(this).hasClass('is-valid'))
+                $p.addClass("is-valid");
+            if($(this).hasClass('is-invalid'))
+                $p.addClass("is-invalid");
+
             $p.insertBefore(this);
             $(this).hide();
 
@@ -20,6 +25,7 @@ import {init} from "pell";
             });
 
             this.pell = init(settings);
+            $p.find(".pell-content").css("height", ($(this).height() - 30) + "px");
         });
         return this;
     };
