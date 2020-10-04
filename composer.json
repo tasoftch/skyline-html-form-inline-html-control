@@ -8,15 +8,19 @@
       "email": "info@tasoft.ch"
     }
   ],
+  "autoload": {
+    "psr-4": {
+      "Skyline\\HTML\\Form\\": "PHP"
+    }
+  },
   "require": {
-    "skyline/html-form": "^0.8"
+    "php": ">=7.2",
+    "skyline/html-form": "^0.8",
+	"ext-json": "*",
+	"ext-dom": "*"
   },
   "require-dev": {
-    "skyline/compiler": "^0.8"
-  },
-  "scripts": {
-    "post-create-project-cmd": [
-      "npm install"
-    ]
+    "skyline/compiler": "^0.8",
+    "phpunit/phpunit": "9.3.10"
   }
 }
