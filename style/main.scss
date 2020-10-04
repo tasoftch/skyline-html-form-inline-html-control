@@ -1,2 +1,14 @@
+
+@import "variables";
 @import "node_modules/pell/src/pell";
 
+
+
+.pell {
+  &.is-valid {
+    border-color: $pell-valid-border-color;
+  }
+  &.is-invalid {
+    border-color: $pell-invalid-border-color;
+  }
+}
