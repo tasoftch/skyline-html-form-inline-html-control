@@ -1,6 +1,22 @@
 
 import {init} from "pell";
 
+class SkylinePell {
+    constructor(pell, output) {
+        this.pell = pell;
+        this.output = output;
+    }
+
+    get content() {
+        return this.pell.content.innerHTML;
+    }
+
+    set content(content) {
+        this.pell.content.innerHTML = content;
+        return this;
+    }
+}
+
 (function($) {
     $.fn.pell = function(settings) {
         this.each(function() {
@@ -24,7 +40,7 @@ import {init} from "pell";
                 }
             });
 
-            this.pell = init(settings);
+            this.pell = new SkylinePell(init(settings), this);
             $p.find(".pell-content").css("height", ($(this).height() - 30) + "px");
         });
         return this;
