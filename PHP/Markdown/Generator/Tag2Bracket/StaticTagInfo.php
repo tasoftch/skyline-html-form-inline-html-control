@@ -53,8 +53,13 @@ class StaticTagInfo implements TagInfoInterface
 		if(NULL !== $openTags) {
 			$this->openTags = $openTags;
 			$this->closeTags = $closeTags === NULL ? array_map(function($t) {
+				$rp = function($t) { return preg_replace("%<([a-z0-9_\-]+)>%", "</$1>", $t); };
 				if(is_string($t))
-					return preg_replace("%<([a-z0-9_\-]+)>%", "</$1>", $t);
+					return $rp($t);
+				elseif(is_array($t)) {
+					foreach($t as &$v)
+						$v = $rp($v);
+				}
 				return $t;
 			}, $openTags) : $closeTags;
 		}

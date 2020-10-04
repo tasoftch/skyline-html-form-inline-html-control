@@ -59,18 +59,13 @@ class StaticTagInfoTest extends TestCase
 	}
 
 	public function testArrayTagInfo() {
-		$ti = new StaticTagInfo(['a' => [
-			StaticTagInfo::IS_OPEN_TAG_OPTION => '<a>',
-			StaticTagInfo::IS_CLOSE_TAG_OPTION => '</a>',
-			StaticTagInfo::IS_OPEN_TAG_OPTION | StaticTagInfo::IS_EDITOR_OPTION => '<b>',
-			StaticTagInfo::IS_CLOSE_TAG_OPTION | StaticTagInfo::IS_EDITOR_OPTION => '</b>'
-		]]);
+		$ti = new StaticTagInfo(['a' => ['<a>', '<e>']]);
 
 		$this->assertEquals("<a>", $ti->getTagInfo('a', $ti::IS_OPEN_TAG_OPTION));
 		$this->assertEquals("</a>", $ti->getTagInfo('a', $ti::IS_CLOSE_TAG_OPTION));
 
-		$this->assertEquals("<b>", $ti->getTagInfo('a', $ti::IS_OPEN_TAG_OPTION | $ti::IS_EDITOR_OPTION));
-		$this->assertEquals("</b>", $ti->getTagInfo('a', $ti::IS_CLOSE_TAG_OPTION | $ti::IS_EDITOR_OPTION));
+		$this->assertEquals("<e>", $ti->getTagInfo('a', $ti::IS_OPEN_TAG_OPTION | $ti::IS_EDITOR_OPTION));
+		$this->assertEquals("</e>", $ti->getTagInfo('a', $ti::IS_CLOSE_TAG_OPTION | $ti::IS_EDITOR_OPTION));
 	}
 
 	public function testCallbackTagInfo() {
