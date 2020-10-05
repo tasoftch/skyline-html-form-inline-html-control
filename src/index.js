@@ -78,18 +78,20 @@ class SkylinePell {
         this.each(function() {
             let $p= $("<div class='pell'></div>");
 
-            $p.css("width", $(this).width() + "px");
             $p.css("height", $(this).height() + "px");
 
-            $(window).on("resize", () => {
-                $p.css("width", $(this).width() + "px");
-                $p.css("height", $(this).height() + "px");
-            })
+
 
             if($(this).hasClass('is-valid'))
                 $p.addClass("is-valid");
             if($(this).hasClass('is-invalid'))
                 $p.addClass("is-invalid");
+
+            if(settings.classes) {
+                settings.classes.map(function(v) {
+                    $p.addClass(v);
+                })
+            }
 
             $p.insertBefore(this);
             $(this).hide();

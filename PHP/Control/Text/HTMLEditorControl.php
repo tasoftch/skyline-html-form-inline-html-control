@@ -59,7 +59,8 @@ class HTMLEditorControl extends AbstractLabelControl implements ImportControlInt
 
 	/** @var string[]  */
 	private $settings = [
-		'defaultParagraphSeparatorString' => 'p'
+		'defaultParagraphSeparatorString' => 'p',
+		"classes" => ['form-control', 'p-0']
 	];
 
 	/** @var string[]|EditorActionAwareInterface[]  */
