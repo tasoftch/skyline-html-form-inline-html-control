@@ -81,11 +81,30 @@ class Tag2BracketGenerator implements MarkdownGeneratorValidatorInterface
 				return $ms[0];
 			}, $plainEditorInput);
 
+			$plainEditorInput = preg_replace([
+				"/(<br>)+/",
+				"/&nbsp;/i"
+			], [
+				"<br>",
+				" "
+			], $plainEditorInput);
+
+			$ti = $this->getTagInfo();
 			// Try to parse tag names into tag markers objects.
-			return preg_replace_callback("%<(/?)([^>]*)>%i", function($ms) {
+			return preg_replace_callback("%<(/?)([^>]*)>%i", function($ms) use ($ti) {
 				list(,$isClose, $name) = $ms;
-				if(NULL !== $this->getTagInfo()->getTagInfo($name, $isClose == '/' ? $this->getTagInfo()::IS_CLOSE_TAG_OPTION : $this->getTagInfo()::IS_OPEN_TAG_OPTION))
-					return $isClose ? "[/$name]" : "[$name]";
+
+				if(@$doc = simplexml_load_string("<$name/>")) {
+					$attrs = [];
+					foreach($doc->attributes() as $n => $v) {
+						$attrs[] = sprintf("%s=%s", urlencode( $n ), urlencode( $v ) );
+					}
+					$name = sprintf("%s:%s", $doc->getName(), implode("&", $attrs));
+				}
+
+				if(NULL !== ($n = $ti->getTagInfo($name, $ti::IS_PARSER_OPTION | ($isClose == '/' ? $ti::IS_CLOSE_TAG_OPTION : $ti::IS_OPEN_TAG_OPTION)))) {
+					return $n;
+				}
 				throw new MarkdownException("No tag info found for $name", 77);
 			}, $plainEditorInput);
 		} catch (MarkdownException $e) {
@@ -99,10 +118,17 @@ class Tag2BracketGenerator implements MarkdownGeneratorValidatorInterface
 	public function generateHTML($markdown): ?string
 	{
 		$ti = $this->getTagInfo();
-		return preg_replace_callback("%\[(/?)([^>]*)]%i", function($ms) use ($ti) {
+		$html = preg_replace_callback("%\[(/?)([^]]*)]%i", function($ms) use ($ti) {
 			list(,$isClose, $name) = $ms;
 			return $ti->getTagInfo($name, $isClose == '/' ? $ti::IS_CLOSE_TAG_OPTION : $ti::IS_OPEN_TAG_OPTION);
 		}, $markdown);
+		return preg_replace([
+			"/[\n\r]/",
+			"/\s/"
+		], [
+			"<br>",
+			"&nbsp;"
+		], $html);
 	}
 
 	/**
@@ -111,10 +137,20 @@ class Tag2BracketGenerator implements MarkdownGeneratorValidatorInterface
 	public function generateInput($markdown): ?string
 	{
 		$ti = $this->getTagInfo();
-		return preg_replace_callback("%\[(/?)([^>]*)]%i", function($ms) use ($ti) {
+		$html = preg_replace_callback("%\[(/?)([^]]*)]%i", function($ms) use ($ti) {
 			list(,$isClose, $name) = $ms;
-			return $ti->getTagInfo($name, $ti::IS_EDITOR_OPTION | ($isClose == '/' ? $ti::IS_CLOSE_TAG_OPTION : $ti::IS_OPEN_TAG_OPTION));
+			$tag = $ti->getTagInfo($name, $ti::IS_EDITOR_OPTION | ($isClose == '/' ? $ti::IS_CLOSE_TAG_OPTION : $ti::IS_OPEN_TAG_OPTION));
+			return preg_replace("/\s/", "°°°°", $tag);
 		}, $markdown);
+		return preg_replace([
+			"/[\n\r]/",
+			"/\s/",
+			"/°°°°/"
+		], [
+			"<br>",
+			"&nbsp;",
+			" "
+		], $html);
 	}
 
 	/**

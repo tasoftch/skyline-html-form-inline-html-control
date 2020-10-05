@@ -43,6 +43,10 @@ class LinkTagInfo extends AbstractAttributedTagInfo
 			self::ATTR_IN_LIST | self::ATTR_DEFAULT,
 			"_blank",
 			['_blank', '_parent', '_self', 's' => '_self', 'p' => '_parent', 'b' => '_blank']
+		],
+		"title" => [
+			self::ATTR_OPTIONAL|self::ATTR_EDITOR_ONLY|self::ATTR_INHERIT_FROM,
+			'href'
 		]
 	];
 

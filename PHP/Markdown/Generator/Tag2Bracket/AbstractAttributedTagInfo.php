@@ -34,7 +34,6 @@
 
 namespace Skyline\HTML\Form\Markdown\Generator\Tag2Bracket;
 
-
 use Skyline\HTML\Form\Exception\MarkdownTagException;
 
 /**
@@ -62,6 +61,12 @@ abstract class AbstractAttributedTagInfo implements TagInfoInterface
 
 	/** @var int Attribute value must be part of a list */
 	const ATTR_IN_LIST = 1<<3;
+
+	const ATTR_OPTIONAL = 1<<4;
+
+	const ATTR_EDITOR_ONLY = 1<<5;
+
+	const ATTR_INHERIT_FROM = 1<<6;
 
 	const ATTR_QUOTES = '"';
 
@@ -95,7 +100,7 @@ abstract class AbstractAttributedTagInfo implements TagInfoInterface
 	 * @return string|null
 	 */
 	protected function getAttributeValue($name, $parsedValue, int $options): ?string {
-		if(!is_null($v = $this->attributeDescriptions[ $name ] ?? NULL)) {
+		if(isset($this->attributeDescriptions[ $name ])) {
 			if($parsedValue === NULL) {
 				$parsedValue = $this->makeDefaultAttributeValue($name, $options);
 			}
@@ -131,6 +136,14 @@ abstract class AbstractAttributedTagInfo implements TagInfoInterface
 	 * @return bool
 	 */
 	protected function isValidAttributeValue($name, &$value, int $options): bool {
+		$optional = function ($v) use ($options, &$value) {
+			if($v & static::ATTR_OPTIONAL && $options & static::IS_PARSER_OPTION) {
+				$value = NULL;
+				return 1;
+			}
+			return 0;
+		};
+
 		if(is_array($v = $this->attributeDescriptions[ $name ])) {
 			@ list($o, $d, $d1) = $v;
 			if($o & self::ATTR_IN_LIST) {
@@ -142,6 +155,11 @@ abstract class AbstractAttributedTagInfo implements TagInfoInterface
 				if(is_callable($d) && !call_user_func($d, $name, $value, $options))
 					return false;
 			}
+			if($optional($o))
+				return true;
+		} elseif(is_int($v)) {
+			if($optional($v))
+				return true;
 		}
 		return true;
 	}
@@ -151,6 +169,8 @@ abstract class AbstractAttributedTagInfo implements TagInfoInterface
 	 */
 	public function getTagInfo(string $tag, int $options): ?string
 	{
+		$tags = $options & self::IS_PARSER_OPTION ? ['[', ']'] : ["<", ">"];
+
 		if(strpos($tag, ':') !== false) {
 			list($tag, $args) = explode(":", $tag, 2);
 			if(strcasecmp(trim($tag), $this->getTagName()) == 0) {
@@ -176,14 +196,17 @@ abstract class AbstractAttributedTagInfo implements TagInfoInterface
 					}
 				});
 
-				array_walk($attributes, function(&$v, $k) {
+				array_walk($attributes, function(&$v, $k) use ($options) {
 					$q = static::ATTR_QUOTES;
-					$v = sprintf("%s=$q%s$q", urlencode($k), urlencode($v));
+					if($options & self::IS_PARSER_OPTION)
+						$v = sprintf("%s=%s", $k, $v);
+					else
+						$v = sprintf("%s=$q%s$q", urldecode($k), str_replace($q, "&quot;", urldecode($v)));
 				});
-				return $attributes ? sprintf("<%s %s>", $this->getTagName(), implode(" ", $attributes)) : sprintf("<%s>", $this->getTagName());
+				return $attributes ? sprintf("$tags[0]%s%s%s$tags[1]", $this->getTagName(), $options & self::IS_PARSER_OPTION ? ":" : " ", implode($options & self::IS_PARSER_OPTION ? "&" : " ", $attributes)) : sprintf("$tags[0]%s$tags[1]", $this->getTagName());
 			}
 		} elseif (strcasecmp(trim($tag), $this->getTagName()) == 0) {
-			return $options & self::IS_CLOSE_TAG_OPTION ? sprintf("</%s>", $this->getTagName()) : sprintf("<%s>", $this->getTagName());
+			return $options & self::IS_CLOSE_TAG_OPTION ? sprintf("$tags[0]/%s$tags[1]", $this->getTagName()) : sprintf("$tags[0]%s$tags[1]", $this->getTagName());
 		}
 		return NULL;
 	}

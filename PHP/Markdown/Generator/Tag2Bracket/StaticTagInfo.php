@@ -133,12 +133,15 @@ class StaticTagInfo implements TagInfoInterface
 
 		repeat:
 		if(is_array($value)) {
-			$value = $value[$options & static::IS_EDITOR_OPTION ? 1 : 0] ?? NULL;
+			$value = $value[($options & static::IS_EDITOR_OPTION | $options & static::IS_PARSER_OPTION) ? 1 : 0] ?? NULL;
 			goto repeat;
 		} elseif(is_callable($value)) {
 			$value = call_user_func($value, $options, $tag);
 			goto repeat;
 		}
+
+		if($value !== NULL && $options & self::IS_PARSER_OPTION)
+			return preg_replace(["/</", "/>/"], ["[", "]"], $value);
 		return $value;
 	}
 }
