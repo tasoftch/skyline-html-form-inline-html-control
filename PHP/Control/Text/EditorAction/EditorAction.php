@@ -32,54 +32,35 @@
  *
  */
 
-namespace Skyline\HTML\Form\Validator;
+namespace Skyline\HTML\Form\Control\Text\EditorAction;
 
-use Skyline\HTML\Form\Exception\FormValidationException;
-use Skyline\HTML\Form\Exception\MarkdownException;
-use Skyline\HTML\Form\Markdown\Generator\MarkdownGeneratorValidatorInterface;
 
-class IsMarkdownValidator extends AbstractValidator
+class EditorAction extends AbstractAction
 {
-	/** @var MarkdownGeneratorValidatorInterface */
-	private $markdownGenerator;
-	private $forceCreation;
-
-	/**
-	 * IsMarkdownValidator constructor.
-	 *
-	 * If force creation flag is enabled, the markdown generator gets instructed to create the markdown.
-	 * If it thrown an exception, the validation fails.
-	 *
-	 * @param MarkdownGeneratorValidatorInterface $markdownGenerator
-	 * @param bool $forceCreation
-	 */
-	public function __construct(MarkdownGeneratorValidatorInterface $markdownGenerator, bool $forceCreation = false)
+	public function __construct(string $name, string $actionHandler, string $title = NULL, string $icon = NULL, string $statusHandler = NULL)
 	{
-		$this->markdownGenerator = $markdownGenerator;
-		$this->forceCreation = $forceCreation;
+		parent::__construct($name, $title, $icon);
+		$this->actionHandler = $actionHandler;
+		$this->statusHandler = $statusHandler;
 	}
 
 	/**
-	 * @inheritDoc
+	 * @param string $actionHandler
+	 * @return static
 	 */
-	public function validateValue($value)
+	public function setActionHandler(string $actionHandler)
 	{
-		if($this->forceCreation) {
-			try {
-				$this->getMarkdownGenerator()->generateFromInput($value);
-			} catch (MarkdownException $e) {
-				throw new FormValidationException($e->getMessage(), $e->getCode(), $e);
-			}
-			return true;
-		}
-		return $this->getMarkdownGenerator()->canGenerateFromInput($value);
+		$this->actionHandler = $actionHandler;
+		return $this;
 	}
 
 	/**
-	 * @return MarkdownGeneratorValidatorInterface
+	 * @param string|null $statusHandler
+	 * @return static
 	 */
-	public function getMarkdownGenerator(): MarkdownGeneratorValidatorInterface
+	public function setStatusHandler(?string $statusHandler)
 	{
-		return $this->markdownGenerator;
+		$this->statusHandler = $statusHandler;
+		return $this;
 	}
 }

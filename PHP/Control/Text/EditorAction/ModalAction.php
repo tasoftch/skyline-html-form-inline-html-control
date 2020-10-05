@@ -32,54 +32,67 @@
  *
  */
 
-namespace Skyline\HTML\Form\Validator;
+namespace Skyline\HTML\Form\Control\Text\EditorAction;
 
-use Skyline\HTML\Form\Exception\FormValidationException;
-use Skyline\HTML\Form\Exception\MarkdownException;
-use Skyline\HTML\Form\Markdown\Generator\MarkdownGeneratorValidatorInterface;
 
-class IsMarkdownValidator extends AbstractValidator
+class ModalAction extends AbstractAction
 {
-	/** @var MarkdownGeneratorValidatorInterface */
-	private $markdownGenerator;
-	private $forceCreation;
-
 	/**
-	 * IsMarkdownValidator constructor.
+	 * ModalAction constructor.
 	 *
-	 * If force creation flag is enabled, the markdown generator gets instructed to create the markdown.
-	 * If it thrown an exception, the validation fails.
+	 * The initial handler gets called to initialize a modal. Its handler gets the current selection passed as argument.
+	 * The final handler gets called on modal stop. The modal can be stopped by returning a code and a response.
+	 * If the code is 0, the final handler does not get called. If its anything else, the final handler gets invoked.
 	 *
-	 * @param MarkdownGeneratorValidatorInterface $markdownGenerator
-	 * @param bool $forceCreation
+	 * Please node that SkylinePell use the bootstrap css framework and will run modal with id == action.name.
+	 * It will also add a handler so the modal gets really stopped if the modal closes.
+	 *
+	 * @param string $name
+	 * @param string $initialHandler
+	 * @param string $finalHandler
+	 * @param string|null $title
+	 * @param string|null $icon
 	 */
-	public function __construct(MarkdownGeneratorValidatorInterface $markdownGenerator, bool $forceCreation = false)
+	public function __construct(string $name, string $initialHandler, string $finalHandler, string $title = NULL, string $icon = NULL)
 	{
-		$this->markdownGenerator = $markdownGenerator;
-		$this->forceCreation = $forceCreation;
+		parent::__construct($name, $title, $icon);
+		$this->actionHandler = $finalHandler;
+		$this->statusHandler = $initialHandler;
 	}
 
 	/**
-	 * @inheritDoc
+	 * @return string
 	 */
-	public function validateValue($value)
+	public function getInitialHandler(): string
 	{
-		if($this->forceCreation) {
-			try {
-				$this->getMarkdownGenerator()->generateFromInput($value);
-			} catch (MarkdownException $e) {
-				throw new FormValidationException($e->getMessage(), $e->getCode(), $e);
-			}
-			return true;
-		}
-		return $this->getMarkdownGenerator()->canGenerateFromInput($value);
+		return $this->statusHandler;
 	}
 
 	/**
-	 * @return MarkdownGeneratorValidatorInterface
+	 * @return string
 	 */
-	public function getMarkdownGenerator(): MarkdownGeneratorValidatorInterface
+	public function getFinalHandler(): string
 	{
-		return $this->markdownGenerator;
+		return $this->actionHandler;
+	}
+
+	/**
+	 * @param string $initialHandler
+	 * @return ModalAction
+	 */
+	public function setInitialHandler(string $initialHandler): ModalAction
+	{
+		$this->statusHandler = $initialHandler;
+		return $this;
+	}
+
+	/**
+	 * @param string $finalHandler
+	 * @return ModalAction
+	 */
+	public function setFinalHandler(string $finalHandler): ModalAction
+	{
+		$this->actionHandler = $finalHandler;
+		return $this;
 	}
 }

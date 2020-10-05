@@ -32,54 +32,29 @@
  *
  */
 
-namespace Skyline\HTML\Form\Validator;
+namespace Skyline\HTML\Form\Control\Text\EditorAction;
 
-use Skyline\HTML\Form\Exception\FormValidationException;
-use Skyline\HTML\Form\Exception\MarkdownException;
-use Skyline\HTML\Form\Markdown\Generator\MarkdownGeneratorValidatorInterface;
 
-class IsMarkdownValidator extends AbstractValidator
+interface EditorActionAwareInterface
 {
-	/** @var MarkdownGeneratorValidatorInterface */
-	private $markdownGenerator;
-	private $forceCreation;
-
 	/**
-	 * IsMarkdownValidator constructor.
+	 * Identifies the action by a unique name.
 	 *
-	 * If force creation flag is enabled, the markdown generator gets instructed to create the markdown.
-	 * If it thrown an exception, the validation fails.
+	 * @return string
+	 */
+	public function getName(): string;
+
+	/**
+	 * Specifies a localized title for the action.
 	 *
-	 * @param MarkdownGeneratorValidatorInterface $markdownGenerator
-	 * @param bool $forceCreation
+	 * @return string|null
 	 */
-	public function __construct(MarkdownGeneratorValidatorInterface $markdownGenerator, bool $forceCreation = false)
-	{
-		$this->markdownGenerator = $markdownGenerator;
-		$this->forceCreation = $forceCreation;
-	}
+	public function getTitle(): ?string;
 
 	/**
-	 * @inheritDoc
+	 * Returns a html string that gets rendered as action bar icon for this action.
+	 *
+	 * @return string|null
 	 */
-	public function validateValue($value)
-	{
-		if($this->forceCreation) {
-			try {
-				$this->getMarkdownGenerator()->generateFromInput($value);
-			} catch (MarkdownException $e) {
-				throw new FormValidationException($e->getMessage(), $e->getCode(), $e);
-			}
-			return true;
-		}
-		return $this->getMarkdownGenerator()->canGenerateFromInput($value);
-	}
-
-	/**
-	 * @return MarkdownGeneratorValidatorInterface
-	 */
-	public function getMarkdownGenerator(): MarkdownGeneratorValidatorInterface
-	{
-		return $this->markdownGenerator;
-	}
+	public function getIcon(): ?string;
 }
