@@ -53,7 +53,8 @@ class TextTagInfo extends StaticTagInfo
 		"h4" => '<h4>',
 		"h5" => '<h5>',
 		"h6" => '<h6>',
-		"div" => '<div>'
+		"div" => '<div>',
+		"span" => ''
 	];
 
 	protected $closeTags = [
@@ -71,6 +72,14 @@ class TextTagInfo extends StaticTagInfo
 		"h4" => '</h4>',
 		"h5" => '</h5>',
 		"h6" => '</h6>',
-		"div" => '</div>'
+		"div" => '</div>',
+		"span" => ''
 	];
+
+	public function getTagInfo(string $tag, int $options): ?string
+	{
+		if(stripos($tag, 'span') === 0)
+			$tag = 'span';
+		return parent::getTagInfo($tag, $options);
+	}
 }
